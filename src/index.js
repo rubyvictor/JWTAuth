@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 8888;
@@ -10,6 +11,7 @@ const users = [
 ];
 
 app.use(bodyParser.json());
+app.use(cors());
 
 app.post('/login', (req, res) => {
   if (!req.body.username || !req.body.password) {
@@ -36,6 +38,10 @@ app.post('/login', (req, res) => {
   );
 
   res.status(200).send({ access_token: token });
+});
+
+app.get('/resource', (req, res) => {
+  res.status(200).send('Public resource, you can see this');
 });
 
 app.get('*', (req, res) => {
