@@ -4,10 +4,11 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 8888;
+const PORT = process.env.PORT || 8000;
 const users = [
-  { id: 1, username: 'admin', password: 'admin' },
-  { id: 2, username: 'guest', password: 'guest' }
+  { id: 1, username: 'user1', password: 'user1' },
+  { id: 2, username: 'user2', password: 'user2' },
+  { id: 3, username: 'user3', password: 'user3' }
 ];
 
 app.use(bodyParser.json());
@@ -34,7 +35,7 @@ app.post('/login', (req, res) => {
       username: user.username
     },
     'mysecretkey',
-    { expiresIn: '3 hours' }
+    { expiresIn: '5 hours' }
   );
 
   res.status(200).send({ access_token: token });

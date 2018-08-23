@@ -1,22 +1,72 @@
 /* To run this file on a server, we are using httpster. 
 yarn add httpster
 Type `httpster index.html -p 5000` in your console to start the server. */
-import { API_URL, AUTH_URL, ACCESS_TOKEN } from './CONSTANTS';
 
-const API_URL = API_URL;
-const AUTH_URL = AUTH_URL;
+const API_URL = 'http://localhost:8000';
+const AUTH_URL = 'http://localhost:3500';
 
-ACCESS_TOKEN = undefined;
+let ACCESS_TOKEN = undefined;
 
-const headlineBtn = document.querySelector('#headline');
-const secretBtn = document.querySelector('#secret');
+const headlineBtn = document.querySelector('#headline'); //Button labelled Public
+const secretBtn = document.querySelector('#secret'); //Button labelled Secret
 const loginBtn = document.querySelector('#loginBtn');
 const logoutBtn = document.querySelector('#logoutBtn');
 
-headlineBtn.addEventListener('click', () => {});
+headlineBtn.addEventListener('click', async () => {
+  await fetch(`${API_URL}/resource`)
+    .then(resp => {
+      return resp.text();
+    })
+    .then(data => {
+      UIUpdate.alertBox(data);
+    });
+});
 
-secretBtn.addEventListener('click', event => {});
+secretBtn.addEventListener('click', event => {
+  let headers = {};
+  if (ACCESS_TOKEN) {
+    headers = {
+      Authorization: `Bearer ${ACCESS_TOKEN}`
+    };
+  }
+  fetch(`${API_URL}/resource/private`, { headers })
+    .then(resp => {
+      UIUpdate.updateCat(resp.status);
+      return resp.text();
+    })
+    .then(data => {
+      UIUpdate.alertBox(data);
+    });
+});
 
-logoutBtn.addEventListener('click', event => {});
+logoutBtn.addEventListener('click', event => {
+  ACCESS_TOKEN = undefined;
+  UIUpdate.loggedOut();
+});
 
-loginBtn.addEventListener('click', event => {});
+loginBtn.addEventListener('click', event => {
+  fetch(`${AUTH_URL}/login`, {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json',
+      accept: 'application/json'
+    },
+    body: JSON.stringify(UIUpdate.getUsernamePassword())
+  })
+    .then(resp => {
+      UIUpdate.updateCat(resp.status);
+      if (resp.status == 200) {
+        return resp.json();
+      } else {
+        return resp.text();
+      }
+    })
+    .then(data => {
+      if (data.access_token) {
+        ACCESS_TOKEN = data.access_token;
+        data = `Access Token: ${data.access_token}`;
+        UIUpdate.loggedIn();
+      }
+      UIUpdate.alertBox(data);
+    });
+});
