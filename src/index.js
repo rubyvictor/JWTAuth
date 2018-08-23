@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
+var expressJwt = require('express-jwt');
 const cors = require('cors');
 
 const app = express();
@@ -40,8 +41,16 @@ app.post('/login', (req, res) => {
   res.status(200).send({ access_token: token });
 });
 
+const jwtCheck = expressJwt({
+  secret: 'mysecretkey'
+});
+
 app.get('/resource', (req, res) => {
   res.status(200).send('Public resource, you can see this');
+});
+
+app.get('/resource/private', jwtCheck, (req, res) => {
+  res.status(200).send('You have been granted access to Secret resource.');
 });
 
 app.get('*', (req, res) => {
