@@ -10,7 +10,9 @@ app.use(bodyParser.json());
 app.use(cors());
 
 const jwtCheck = expressJwt({
-  secret: 'mysecretkey'
+  secret: 'f320LsEyy66rW1tJt7pG9VAosnZaVmnk',
+  audience: 'jwtnode-demo',
+  issuer: 'https://jwtnode.auth0.com/'
 });
 
 app.get('/resource', (req, res) => {
